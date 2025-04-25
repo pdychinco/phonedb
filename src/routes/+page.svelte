@@ -12,40 +12,80 @@
             model: string; 
             storage: number; 
             msrp: number; 
-            finance: number 
-        } => Boolean(phone.brand && phone.model && phone.storage && phone.msrp && phone.finance))
+            finance: number;
+            lease: number;
+            entryDate: string;
+        } => Boolean(phone.brand && phone.model && phone.storage && phone.msrp && phone.finance && phone.lease))
         .map(phone => ({
             name: `${phone.brand} ${phone.model} ${phone.storage}GB`,
             monthlyPrice: phone.finance,
+            leasePrice: phone.lease,
             downPayment: 0, // This could be calculated differently if needed
             apr: 0, // This could be calculated differently if needed
             retailPrice: phone.msrp,
-            savings: phone.msrp - (phone.finance * 24), // Example calculation, adjust as needed
+            savings: phone.msrp - (phone.lease * 24), // Calculate savings based on lease price
             brand: phone.brand,
-            carrier: phone.carrier
+            carrier: phone.carrier,
+            entryDate: phone.entryDate
         }));
 
     // Filter states
     let selectedCarrier: string | null = null;
     let selectedBrand: string | null = null;
+    let selectedModel: string | null = null;
+    let selectedStorage: number | null = null;
 
     // Get unique brands and carriers from the actual data
     const brands = [...new Set(phones.map(phone => phone.brand).filter(Boolean))];
     const carriers = [...new Set(phones.map(phone => phone.carrier).filter(Boolean))];
+    
+    // Get models based on selected brand
+    $: availableModels = selectedBrand 
+        ? [...new Set(phones
+            .filter(phone => phone.brand === selectedBrand)
+            .map(phone => {
+                const parts = phone.name.split(' ');
+                return parts.slice(1, -1).join(' ');
+            })
+            .filter(Boolean))]
+        : [];
+
+    // Get storage options based on selected model
+    $: availableStorage = selectedModel
+        ? [...new Set(phones
+            .filter(phone => {
+                const parts = phone.name.split(' ');
+                const model = parts.slice(1, -1).join(' ');
+                return model === selectedModel;
+            })
+            .map(phone => phone.name.split(' ').pop()?.replace('GB', ''))
+            .filter(Boolean))]
+        : [];
 
     // Filtered phones based on selections
     $: filteredPhones = phones.filter(phone => {
         const matchesCarrier = !selectedCarrier || phone.carrier === selectedCarrier;
         const matchesBrand = !selectedBrand || phone.brand === selectedBrand;
-        return matchesCarrier && matchesBrand;
+        const matchesModel = !selectedModel || phone.name.split(' ').slice(1, -1).join(' ') === selectedModel;
+        const matchesStorage = !selectedStorage || phone.name.split(' ').pop()?.replace('GB', '') === selectedStorage.toString();
+        return matchesCarrier && matchesBrand && matchesModel && matchesStorage;
     });
 
     // Function to handle filter selection
-    function handleFilter(type: 'carrier' | 'brand', value: string) {
+    function handleFilter(type: 'carrier' | 'brand' | 'model' | 'storage', value: string | number) {
         if (type === 'carrier') {
-            selectedCarrier = selectedCarrier === value ? null : value;
-        } else {
-            selectedBrand = selectedBrand === value ? null : value;
+            selectedCarrier = selectedCarrier === value ? null : value as string;
+        } else if (type === 'brand') {
+            selectedBrand = selectedBrand === value ? null : value as string;
+            // Reset model and storage when brand changes
+            selectedModel = null;
+            selectedStorage = null;
+        } else if (type === 'model') {
+            selectedModel = selectedModel === value ? null : value as string;
+            // Reset storage when model changes
+            selectedStorage = null;
+        } else if (type === 'storage') {
+            selectedStorage = selectedStorage === value ? null : value as number;
         }
     }
 </script>
@@ -87,6 +127,42 @@
                     {/each}
                 </div>
             </div>
+
+            {#if selectedBrand}
+                <div class="filter-group">
+                    <h3>Models</h3>
+                    <div class="filter-buttons">
+                        {#each availableModels as model}
+                            {#if model}
+                                <button 
+                                    class="filter-button {selectedModel === model ? 'active' : ''}"
+                                    on:click={() => handleFilter('model', model)}
+                                >
+                                    {model}
+                                </button>
+                            {/if}
+                        {/each}
+                    </div>
+                </div>
+            {/if}
+
+            {#if selectedModel}
+                <div class="filter-group">
+                    <h3>Storage</h3>
+                    <div class="filter-buttons">
+                        {#each availableStorage as storage}
+                            {#if storage}
+                                <button 
+                                    class="filter-button {selectedStorage === parseInt(storage) ? 'active' : ''}"
+                                    on:click={() => handleFilter('storage', parseInt(storage))}
+                                >
+                                    {storage}GB
+                                </button>
+                            {/if}
+                        {/each}
+                    </div>
+                </div>
+            {/if}
         </div>
     </header>
   
