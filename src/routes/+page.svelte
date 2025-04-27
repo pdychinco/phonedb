@@ -21,7 +21,7 @@
             retailPrice: phone.msrp,
             savings: phone.msrp - (phone.price * 24), // Example calculation, adjust as needed
             brand: phone.brand,
-            carrier: phone.carrier,
+            carrier: phone.carrier ?? "Unknown",
             entryDate: phone.entrydate
         }));
 
