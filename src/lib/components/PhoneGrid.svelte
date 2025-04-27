@@ -3,11 +3,12 @@
   
   export let phones: Array<{
     name: string;
-    monthlyPrice: number;
-    downPayment: number;
+    price: number;
     apr: number;
     retailPrice: number;
     savings: number;
+    carrier: string;
+    entryDate: string;
   }>;
 </script>
 

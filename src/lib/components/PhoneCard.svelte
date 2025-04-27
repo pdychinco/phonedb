@@ -1,9 +1,7 @@
 <script lang="ts">
   export let phone: {
     name: string;
-    monthlyPrice: number;
-    leasePrice: number;
-    downPayment: number;
+    price: number;
     apr: number;
     retailPrice: number;
     savings: number;
@@ -19,12 +17,8 @@
   </div>
   <div class="price-details">
     <div class="price-item">
-      <span class="label">Finance Price</span>
-      <span class="value">${phone.monthlyPrice.toFixed(2)}/mo</span>
-    </div>
-    <div class="price-item">
-      <span class="label">Lease Price</span>
-      <span class="value">${phone.leasePrice.toFixed(2)}/mo</span>
+      <span class="label">Device Price</span>
+      <span class="value">${phone.price.toFixed(2)}/mo</span>
     </div>
     <div class="price-item">
       <span class="label">Retail Price</span>
