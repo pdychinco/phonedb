@@ -13,14 +13,14 @@
             storage: number; 
             msrp: number; 
             finance: number 
-        } => Boolean(phone.brand && phone.model && phone.storage && phone.msrp && phone.finance))
+        } => Boolean(phone.brand && phone.model && phone.storage && phone.msrp && phone.price))
         .map(phone => ({
             name: `${phone.brand} ${phone.model} ${phone.storage}GB`,
-            monthlyPrice: phone.finance,
+            monthlyPrice: phone.price,
             downPayment: 0, // This could be calculated differently if needed
             apr: 0, // This could be calculated differently if needed
             retailPrice: phone.msrp,
-            savings: phone.msrp - (phone.finance * 24), // Example calculation, adjust as needed
+            savings: phone.msrp - (phone.price * 24), // Example calculation, adjust as needed
             brand: phone.brand,
             carrier: phone.carrier
         }));

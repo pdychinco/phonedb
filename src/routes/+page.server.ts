@@ -1,9 +1,8 @@
 import { supabase } from "$lib/supabaseClient";
 
 type DatabasePhone = {
-  finance: number;
-  lease: number;
-  entryDate: string;
+  price: number;
+  entrydate: string;
   carrier: { name: string } | null;
   products: {
     brand: string;
@@ -17,9 +16,8 @@ export async function load() {
   const { data, error } = await supabase
     .from('main')
     .select(`
-      finance,
-      lease,
-      entryDate,
+      price,
+      entrydate,
       carrier:carrier(name),
       products:prodid(
         brand,
@@ -38,9 +36,8 @@ export async function load() {
 
   // Transform the data to a flatter structure
   const phones = data?.map(item => ({
-    finance: item.finance,
-    lease: item.lease,
-    entryDate: item.entryDate,
+    price: item.price,
+    entrydate: item.entrydate,
     carrier: item.carrier?.name ?? null,
     brand: item.products?.brand ?? null,
     model: item.products?.model ?? null,
