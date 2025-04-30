@@ -87,80 +87,80 @@
 </script>
   
 <div class="container">
-    <header>
+    <div class="content">
         <h1>Available Phones</h1>
         <p>Browse our selection of the latest smartphones with flexible payment options</p>
         
         <div class="filters">
             <div class="filter-group">
                 <h3>Carriers</h3>
-                <div class="filter-buttons">
+                <select 
+                    class="filter-select"
+                    on:change={(e) => handleFilter('carrier', (e.target as HTMLSelectElement).value)}
+                    value={selectedCarrier ?? ''}
+                >
+                    <option value="">All Carriers</option>
                     {#each carriers as carrier}
                         {#if carrier}
-                            <button 
-                                class="filter-button {selectedCarrier === carrier ? 'active' : ''}"
-                                on:click={() => handleFilter('carrier', carrier)}
-                            >
-                                {carrier}
-                            </button>
+                            <option value={carrier}>{carrier}</option>
                         {/if}
                     {/each}
-                </div>
+                </select>
             </div>
 
             <div class="filter-group">
                 <h3>Brands</h3>
-                <div class="filter-buttons">
+                <select 
+                    class="filter-select"
+                    on:change={(e) => handleFilter('brand', (e.target as HTMLSelectElement).value)}
+                    value={selectedBrand ?? ''}
+                >
+                    <option value="">All Brands</option>
                     {#each brands as brand}
                         {#if brand}
-                            <button 
-                                class="filter-button {selectedBrand === brand ? 'active' : ''}"
-                                on:click={() => handleFilter('brand', brand)}
-                            >
-                                {brand}
-                            </button>
+                            <option value={brand}>{brand}</option>
                         {/if}
                     {/each}
-                </div>
+                </select>
             </div>
 
             {#if selectedBrand}
                 <div class="filter-group">
                     <h3>Models</h3>
-                    <div class="filter-buttons">
+                    <select 
+                        class="filter-select"
+                        on:change={(e) => handleFilter('model', (e.target as HTMLSelectElement).value)}
+                        value={selectedModel ?? ''}
+                    >
+                        <option value="">All Models</option>
                         {#each availableModels as model}
                             {#if model}
-                                <button 
-                                    class="filter-button {selectedModel === model ? 'active' : ''}"
-                                    on:click={() => handleFilter('model', model)}
-                                >
-                                    {model}
-                                </button>
+                                <option value={model}>{model}</option>
                             {/if}
                         {/each}
-                    </div>
+                    </select>
                 </div>
             {/if}
 
             {#if selectedModel}
                 <div class="filter-group">
                     <h3>Storage</h3>
-                    <div class="filter-buttons">
+                    <select 
+                        class="filter-select"
+                        on:change={(e) => handleFilter('storage', parseInt((e.target as HTMLSelectElement).value))}
+                        value={selectedStorage ?? ''}
+                    >
+                        <option value="">All Storage Options</option>
                         {#each availableStorage as storage}
                             {#if storage}
-                                <button 
-                                    class="filter-button {selectedStorage === parseInt(storage) ? 'active' : ''}"
-                                    on:click={() => handleFilter('storage', parseInt(storage))}
-                                >
-                                    {storage}GB
-                                </button>
+                                <option value={storage}>{storage}GB</option>
                             {/if}
                         {/each}
-                    </div>
+                    </select>
                 </div>
             {/if}
         </div>
-    </header>
+    </div>
   
     <main>
         <PhoneGrid phones={filteredPhones} />
@@ -169,13 +169,13 @@
   
 <style>
     .container {
-        min-height: 100vh;
         background: #f8f9fa;
+        min-height: calc(100vh - 60px); /* Subtract header height */
     }
   
-    header {
+    .content {
         text-align: center;
-        padding: 3rem 1rem;
+        padding: 2rem 1rem;
         background: white;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
@@ -211,31 +211,22 @@
         margin: 0 0 0.5rem 0;
     }
 
-    .filter-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        justify-content: center;
-    }
-
-    .filter-button {
-        padding: 0.5rem 1rem;
+    .filter-select {
+        width: 100%;
+        max-width: 300px;
+        padding: 0.5rem;
         border: 1px solid #dee2e6;
         border-radius: 4px;
         background: white;
         color: #495057;
         cursor: pointer;
-        transition: all 0.2s ease;
+        font-size: 1rem;
     }
 
-    .filter-button:hover {
-        background: #e9ecef;
-    }
-
-    .filter-button.active {
-        background: #007bff;
-        color: white;
+    .filter-select:focus {
+        outline: none;
         border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
     }
   
     main {
@@ -243,8 +234,8 @@
     }
   
     @media (max-width: 640px) {
-        header {
-            padding: 2rem 1rem;
+        .content {
+            padding: 1.5rem 1rem;
         }
   
         h1 {
@@ -255,14 +246,8 @@
             font-size: 1rem;
         }
 
-        .filter-buttons {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .filter-button {
-            width: 100%;
-            max-width: 200px;
+        .filter-select {
+            max-width: 100%;
         }
     }
 </style> 

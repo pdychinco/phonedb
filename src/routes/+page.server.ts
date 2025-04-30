@@ -3,6 +3,7 @@ import { supabase } from "$lib/supabaseClient";
 type DatabasePhone = {
   price: number;
   entrydate: string;
+  prodid: string;
   carrier: { name: string } | null;
   products: {
     brand: string;
@@ -11,13 +12,13 @@ type DatabasePhone = {
     msrp: number;
   } | null;
 }
-
 export async function load() {
   const { data, error } = await supabase
-    .from('main')
+    .from('history')
     .select(`
       price,
       entrydate,
+      prodid,
       carrier:carrier(name),
       products:prodid(
         brand,
@@ -25,7 +26,21 @@ export async function load() {
         storage,
         msrp
       )
-    `) as { data: DatabasePhone[] | null, error: any };
+    `)
+    .order('entrydate', { ascending: false })
+    .limit(1000) as { data: DatabasePhone[] | null, error: any };
+
+  // Get latest entry for each prodid and carrier combination
+  const latestByProductAndCarrier = data?.reduce((acc, curr) => {
+    const key = `${curr.prodid}-${curr.carrier?.name ?? 'unknown'}`;
+    if (!acc[key] || new Date(curr.entrydate) > new Date(acc[key].entrydate)) {
+      acc[key] = curr;
+    }
+    return acc;
+  }, {} as Record<string, DatabasePhone>);
+
+  const latestEntries = latestByProductAndCarrier ? Object.values(latestByProductAndCarrier) : [];
+  const filteredData = latestEntries;
 
   if (error) {
     console.error('Error fetching data:', error);
@@ -35,7 +50,7 @@ export async function load() {
   }
 
   // Transform the data to a flatter structure
-  const phones = data?.map(item => ({
+  const phones = filteredData?.map(item => ({
     price: item.price,
     entrydate: item.entrydate,
     carrier: item.carrier?.name ?? null,

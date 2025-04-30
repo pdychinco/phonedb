@@ -17,7 +17,7 @@
   </div>
   <div class="price-details">
     <div class="price-item">
-      <span class="label">Device Price</span>
+      <span class="label">Starting Device Price</span>
       <span class="value">${phone.price.toFixed(2)}/mo</span>
     </div>
     <div class="price-item">
