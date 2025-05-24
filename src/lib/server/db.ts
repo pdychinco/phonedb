@@ -85,30 +85,38 @@ export const phoneQueries = {
             .eq('products.brand', brand)
             .order('latest_entry_date', { ascending: false })
             .limit(1000);
-            
+        
         if (error) throw error;
-        return data;
+        return data.filter(phone => phone.products?.brand === brand);
     },
 
     // Get phones by carrier
     getPhonesByCarrier: async (carrier: string) => {
         // Get the carrierID based on carrier name
-        const { data: carrierData, error: carrierError } = await supabase
-            .from('carrier')
-            .select('id')
-            .eq('name', carrier)
-            .single();
-            
-        if (carrierError) throw carrierError;
-        
-        // Get products with matching carrierID
         const { data, error } = await supabase
-            .from('products')
-            .select('*')
-            .eq('carrierID', carrierData.id);
-            
+            .from('main')
+            .select(`
+            current_price,
+            lowest_price,
+            latest_entry_date,
+            lowest_entry_date,
+            prod_id,
+            carrier:carrier_id(name),
+            products:prod_id(
+                brand,
+                model,
+                storage,
+                msrp
+            )
+            `)
+            .eq('carrier.name', carrier)
+            .order('latest_entry_date', { ascending: false })
+            .limit(1000);
+        
         if (error) throw error;
-        return data;
+        
+       
+        return data.filter(phone => phone.carrier?.name === carrier);
     },
 
     // Get a specific phone by ID

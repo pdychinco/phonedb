@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { phoneQueries, carrierQueries } from '$lib/server/db';
+import { phoneQueries, carrierQueries, mapDatabasePhoneToUI } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -8,7 +8,6 @@ export const load: PageServerLoad = async ({ params }) => {
     try {
         // Format carrier name (e.g., "telus" -> "Telus")
         const formattedCarrier = carrier.charAt(0).toUpperCase() + carrier.slice(1).toLowerCase();
-        
         // // Get carrier details
         // const carrierDetails = await carrierQueries.getCarrierByName(formattedCarrier);
         
@@ -18,7 +17,7 @@ export const load: PageServerLoad = async ({ params }) => {
         return {
             carrier: formattedCarrier,
             // carrierDetails,
-            phones,
+            phones: phones.map(mapDatabasePhoneToUI),
             title: `${formattedCarrier} Phones`
         };
     } catch (e) {

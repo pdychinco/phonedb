@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { phoneQueries } from '$lib/server/db';
+import { mapDatabasePhoneToUI, phoneQueries } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params }) => {
         return {
             brand,
             title: `${brand} Phones`,
-            phones
+            phones: phones.map(mapDatabasePhoneToUI)
         };
     } catch (e) {
         // If the brand doesn't exist or there's an error, throw a 404
