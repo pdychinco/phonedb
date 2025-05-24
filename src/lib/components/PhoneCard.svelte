@@ -8,6 +8,19 @@
     carrier: string;
     entryDate: string;
   };
+
+  // Compute dynamic background color for savings
+  $: savingsBg = phone.savings < 0
+    ? '#ffebee' // red background for negative
+    : phone.savings > 0
+      ? '#e8f5e9' // green background for positive
+      : '#f8f9fa'; // neutral for zero
+  
+  $: savingsValue = phone.savings < 0
+  ? 'red'
+  : phone.savings > 0
+    ? 'green'
+    : 'black';
 </script>
 
 <div class="phone-card">
@@ -24,9 +37,9 @@
       <span class="label">Retail Price</span>
       <span class="value">${phone.retailPrice.toFixed(2)}</span>
     </div>
-    <div class="price-item savings">
+    <div class="price-item savings" style="background: {savingsBg};">
       <span class="label">Savings</span>
-      <span class="value savings-value">${phone.savings.toFixed(2)}</span>
+      <span class="value savings-value" style="color: {savingsValue};">${phone.savings.toFixed(2)}</span>
     </div>
   </div>
   <div class="footer">
@@ -91,13 +104,6 @@
     color: #2c3e50;
   }
 
-  .savings {
-    background: #e8f5e9;
-  }
-
-  .savings-value {
-    color: #2e7d32;
-  }
 
   .footer {
     margin-top: 1rem;

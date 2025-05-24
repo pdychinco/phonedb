@@ -22,7 +22,7 @@
             savings: phone.msrp - (phone.price * 24), // Example calculation, adjust as needed
             brand: phone.brand,
             carrier: phone.carrier ?? "Unknown",
-            entryDate: phone.entrydate
+            entryDate: phone.latest_entry_date
         }));
 
     // Filter states

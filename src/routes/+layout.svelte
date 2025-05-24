@@ -11,11 +11,11 @@
             </svelte:fragment>
             <svelte:fragment slot="trail">
                 <div class="flex gap-4">
-                    <div class="dropdown">
+                    <div class="relative group">
                         <button class="btn variant-filled">
                             Phones
                         </button>
-                        <div class="dropdown-menu">
+                        <div class="hidden group-hover:block absolute right-0 top-full w-48 bg-surface-700 rounded-lg shadow-lg z-50">
                             <nav class="list-nav">
                                 <ul>
                                     <li><a href="/phones/apple" class="!text-white hover:!bg-surface-600">Apple</a></li>
@@ -26,11 +26,11 @@
                         </div>
                     </div>
 
-                    <div class="dropdown">
+                    <div class="relative group">
                         <button class="btn variant-filled">
                             Carriers
                         </button>
-                        <div class="dropdown-menu">
+                        <div class="hidden group-hover:block absolute right-0 top-full w-48 bg-surface-700 rounded-lg shadow-lg z-50">
                             <nav class="list-nav">
                                 <ul>
                                     <li><a href="/carriers/telus" class="!text-white hover:!bg-surface-600">Telus</a></li>
@@ -51,3 +51,9 @@
         <slot />
     </main>
 </AppShell>
+
+<style>
+    .group:hover > div {
+        display: block;
+    }
+</style>
