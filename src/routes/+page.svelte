@@ -1,30 +1,14 @@
 <script lang="ts">
     import PhoneGrid from '$lib/components/PhoneGrid.svelte';
+    import type { UIMappedPhone } from '$lib/server/db.js';
+
+    
 
     // Get the data from the server
     export let data;
-    const dbPhones = data.phones;
-
-    // Transform database phones to match PhoneGrid/PhoneCard component interface
-    const phones = dbPhones
-        .filter((phone): phone is typeof phone & { 
-            brand: string; 
-            model: string; 
-            storage: number; 
-            msrp: number; 
-            price: number; 
-        } => Boolean(phone.brand && phone.model && phone.storage && phone.msrp && phone.price))
-        .map(phone => ({
-            name: `${phone.brand} ${phone.model} ${phone.storage}GB`,
-            current_price: phone.price,
-            lowest_price: phone.lowest_price,
-            apr: 0, // This could be calculated differently if needed
-            retailPrice: phone.msrp,
-            savings: phone.msrp - (phone.price * 24), // Example calculation, adjust as needed
-            carrier: phone.carrier ?? "Unknown",
-            latest_entry_date: phone.latest_entry_date,
-            lowest_entry_date: phone.lowest_entry_date
-        }));
+    const phones: UIMappedPhone[] = data.data;
+   
+    
 
     // Filter states
     let selectedCarrier: string | null = null;
@@ -33,17 +17,14 @@
     let selectedStorage: number | null = null;
 
     // Get unique brands and carriers from the actual data
-    const brands = [...new Set(phones.map(phone => phone.name.split(' ')[0]).filter(Boolean))];
+    const brands = [...new Set(phones.map(phone => phone.brand).filter(Boolean))];
     const carriers = [...new Set(phones.map(phone => phone.carrier).filter(Boolean))];
     
     // Get models based on selected brand
     $: availableModels = selectedBrand 
         ? [...new Set(phones
-            .filter(phone => phone.name.split(' ')[0] === selectedBrand)
-            .map(phone => {
-                const parts = phone.name.split(' ');
-                return parts.slice(1, -1).join(' ');
-            })
+            .filter(phone => phone.brand === selectedBrand)
+            .map(phone => phone.model)
             .filter(Boolean))]
         : [];
 
@@ -51,20 +32,18 @@
     $: availableStorage = selectedModel
         ? [...new Set(phones
             .filter(phone => {
-                const parts = phone.name.split(' ');
-                const model = parts.slice(1, -1).join(' ');
-                return model === selectedModel;
+                return phone.model === selectedModel;
             })
-            .map(phone => phone.name.split(' ').pop()?.replace('GB', ''))
+            .map(phone => phone.storage)
             .filter(Boolean))]
         : [];
 
     // Filtered phones based on selections
     $: filteredPhones = phones.filter(phone => {
         const matchesCarrier = !selectedCarrier || phone.carrier === selectedCarrier;
-        const matchesBrand = !selectedBrand || phone.name.split(' ')[0] === selectedBrand;
-        const matchesModel = !selectedModel || phone.name.split(' ').slice(1, -1).join(' ') === selectedModel;
-        const matchesStorage = !selectedStorage || phone.name.split(' ').pop()?.replace('GB', '') === selectedStorage.toString();
+        const matchesBrand = !selectedBrand || phone.brand === selectedBrand;
+        const matchesModel = !selectedModel || phone.model === selectedModel;
+        const matchesStorage = !selectedStorage || phone.storage === selectedStorage;
         return matchesCarrier && matchesBrand && matchesModel && matchesStorage;
     });
 

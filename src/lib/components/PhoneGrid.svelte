@@ -1,17 +1,8 @@
 <script lang="ts">
   import PhoneCard from './PhoneCard.svelte';
   
-  export let phones: Array<{
-    name: string;
-    current_price: number;
-    lowest_price: number;
-    apr: number;
-    retailPrice: number;
-    savings: number;
-    carrier: string;
-    latest_entry_date: string;
-    lowest_entry_date: string;
-  }>;
+  import type { UIMappedPhone } from '$lib/server/db.js';
+  export let phones: UIMappedPhone[];
 </script>
 
 <div class="phone-grid">

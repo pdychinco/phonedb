@@ -1,15 +1,6 @@
 <script lang="ts">
-  export let phone: {
-    name: string;
-    current_price: number;
-    lowest_price: number;
-    apr: number;
-    retailPrice: number;
-    savings: number;
-    carrier: string;
-    latest_entry_date: string;
-    lowest_entry_date: string;
-  };
+  import type { UIMappedPhone } from '$lib/server/db.js';
+  export let phone: UIMappedPhone;
 
   // Compute dynamic background color for savings
   $: savingsBg = phone.savings < 0
@@ -27,7 +18,7 @@
 
 <div class="phone-card">
   <div class="header">
-    <h2 class="phone-name">{phone.name}</h2>
+    <h2 class="phone-name">{phone.brand} {phone.model}</h2>
     <p class="carrier">{phone.carrier}</p>
   </div>
   <div class="price-details">
@@ -37,10 +28,10 @@
     </div>
     <div class="price-item">
       <span class="label">Retail Price</span>
-      <span class="value">${phone.retailPrice.toFixed(2)}</span>
+      <span class="value">${phone.msrp?.toFixed(2) ?? 'N/A'}</span>
     </div>
     <div class="price-item savings" style="background: {savingsBg};">
-      <span class="label">Savings</span>
+      <span class="label">Total Savings</span>
       <span class="value savings-value" style="color: {savingsValue};">${phone.savings.toFixed(2)}</span>
     </div>
     <div class="price-item">
