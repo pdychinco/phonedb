@@ -3,12 +3,14 @@
   
   export let phones: Array<{
     name: string;
-    price: number;
+    current_price: number;
+    lowest_price: number;
     apr: number;
     retailPrice: number;
     savings: number;
     carrier: string;
-    entryDate: string;
+    latest_entry_date: string;
+    lowest_entry_date: string;
   }>;
 </script>
 

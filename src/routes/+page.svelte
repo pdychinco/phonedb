@@ -5,7 +5,7 @@
     export let data;
     const dbPhones = data.phones;
 
-    // Transform database phones to match PhoneGrid component interface
+    // Transform database phones to match PhoneGrid/PhoneCard component interface
     const phones = dbPhones
         .filter((phone): phone is typeof phone & { 
             brand: string; 
@@ -16,13 +16,14 @@
         } => Boolean(phone.brand && phone.model && phone.storage && phone.msrp && phone.price))
         .map(phone => ({
             name: `${phone.brand} ${phone.model} ${phone.storage}GB`,
-            price: phone.price,
+            current_price: phone.price,
+            lowest_price: phone.lowest_price,
             apr: 0, // This could be calculated differently if needed
             retailPrice: phone.msrp,
             savings: phone.msrp - (phone.price * 24), // Example calculation, adjust as needed
-            brand: phone.brand,
             carrier: phone.carrier ?? "Unknown",
-            entryDate: phone.latest_entry_date
+            latest_entry_date: phone.latest_entry_date,
+            lowest_entry_date: phone.lowest_entry_date
         }));
 
     // Filter states
@@ -32,13 +33,13 @@
     let selectedStorage: number | null = null;
 
     // Get unique brands and carriers from the actual data
-    const brands = [...new Set(phones.map(phone => phone.brand).filter(Boolean))];
+    const brands = [...new Set(phones.map(phone => phone.name.split(' ')[0]).filter(Boolean))];
     const carriers = [...new Set(phones.map(phone => phone.carrier).filter(Boolean))];
     
     // Get models based on selected brand
     $: availableModels = selectedBrand 
         ? [...new Set(phones
-            .filter(phone => phone.brand === selectedBrand)
+            .filter(phone => phone.name.split(' ')[0] === selectedBrand)
             .map(phone => {
                 const parts = phone.name.split(' ');
                 return parts.slice(1, -1).join(' ');
@@ -61,7 +62,7 @@
     // Filtered phones based on selections
     $: filteredPhones = phones.filter(phone => {
         const matchesCarrier = !selectedCarrier || phone.carrier === selectedCarrier;
-        const matchesBrand = !selectedBrand || phone.brand === selectedBrand;
+        const matchesBrand = !selectedBrand || phone.name.split(' ')[0] === selectedBrand;
         const matchesModel = !selectedModel || phone.name.split(' ').slice(1, -1).join(' ') === selectedModel;
         const matchesStorage = !selectedStorage || phone.name.split(' ').pop()?.replace('GB', '') === selectedStorage.toString();
         return matchesCarrier && matchesBrand && matchesModel && matchesStorage;

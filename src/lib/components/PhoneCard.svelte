@@ -1,12 +1,14 @@
 <script lang="ts">
   export let phone: {
     name: string;
-    price: number;
+    current_price: number;
+    lowest_price: number;
     apr: number;
     retailPrice: number;
     savings: number;
     carrier: string;
-    entryDate: string;
+    latest_entry_date: string;
+    lowest_entry_date: string;
   };
 
   // Compute dynamic background color for savings
@@ -31,7 +33,7 @@
   <div class="price-details">
     <div class="price-item">
       <span class="label">Starting Device Price</span>
-      <span class="value">${phone.price.toFixed(2)}/mo</span>
+      <span class="value">${phone.current_price.toFixed(2)}/mo</span>
     </div>
     <div class="price-item">
       <span class="label">Retail Price</span>
@@ -41,9 +43,14 @@
       <span class="label">Savings</span>
       <span class="value savings-value" style="color: {savingsValue};">${phone.savings.toFixed(2)}</span>
     </div>
+    <div class="price-item">
+      <span class="label">Lowest Price</span>
+      <span class="value">${phone.lowest_price.toFixed(2)}</span>
+      <span class="date">Recorded: {new Date(phone.lowest_entry_date).toLocaleDateString()}</span>
+    </div>
   </div>
   <div class="footer">
-    <span class="date">Posted: {new Date(phone.entryDate).toLocaleDateString()}</span>
+    <span class="date">Last Updated: {new Date(phone.latest_entry_date).toLocaleDateString()}</span>
   </div>
 </div>
 
